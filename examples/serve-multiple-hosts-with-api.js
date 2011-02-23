@@ -1,18 +1,18 @@
-
-var http = require('http')
-var lightnode = require('../lightnode')
+var PORT      = 8888;
+var http      = require('http');
+var lightnode = require('../lightnode');
 
 
 // 1 - create and start the node ip server
-var server = new http.Server(); server.listen(8081)
+var server   = new http.Server(); server.listen(PORT);
 		
 // 2 - create the file server for the root directory
-var websites = new lightnode.FileServer('/home/web/')
+var websites = new lightnode.FileServer('/home/web/');
 
 // intercept all requests as usual
 server.addListener('request', function(req, resp) {
 	
-	var hostName = req.headers.host.split(':')[0]
+	var hostName = req.headers.host.split(':')[0];
 	
 	// 3 - we only want to insert special handling if the request is for a certain host
 	if (hostName == 'www.ngspinners.com') {
@@ -21,7 +21,7 @@ server.addListener('request', function(req, resp) {
 		if (req.url.indexOf('/api') == 0) {
 		
 			// 5 - a return statement prevents the rest of this function's handling from taking place
-			return apiHandler(req, resp)
+			return apiHandler(req, resp);
 			
 		}
 	
@@ -30,23 +30,23 @@ server.addListener('request', function(req, resp) {
 	// for all requests not completed above do the virtual host processing as usual
 	
 	// 6 - get or create a file server that will have this host name as the last element on it's root directory path
-	var hostFileServer = websites.getChild(hostName)
+	var hostFileServer = websites.getChild(hostName);
 	
 	// 7 - send the request to that host's file server
-	hostFileServer.receiveRequest(req, resp)
+	hostFileServer.receiveRequest(req, resp);
 
-})
+});
 
 
 
 // this is run when the given request must be handled by the API
 function apiHandler(req, resp) {
 	// I'm a hello world API
-	var message = 'hello, world.'
+	var message = 'Hello World!';
 	resp.writeHead(200, {
 		'content-type': 'text/plain',
 		'content-length': message.length
-	})
-	resp.write(message)
-	resp.end()
+	});
+	resp.write(message);
+	resp.end();
 }
